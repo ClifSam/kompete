@@ -7,15 +7,24 @@ export const runtime = 'nodejs'
 export const maxDuration = 120
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const company: string = body.company?.trim()
+  let body: unknown
+  try {
+    body = await request.json()
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 
-  if (!company) {
+  const raw: unknown = (body as Record<string, unknown>)?.company
+  if (typeof raw !== 'string' || !raw.trim()) {
     return new Response(JSON.stringify({ error: 'Company name required' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     })
   }
+  const company = raw.trim()
 
   const encoder = new TextEncoder()
 
