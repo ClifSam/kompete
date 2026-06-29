@@ -86,10 +86,24 @@ export async function* runCompetitiveAnalysis(
 
       for (const toolUse of toolUseBlocks) {
         if (toolUse.name === 'web_search') {
-          const input = toolUse.input as { query: string }
-          yield { type: 'search', query: input.query }
+          const rawInput = toolUse.input
+          if (
+            typeof rawInput !== 'object' ||
+            rawInput === null ||
+            !('query' in rawInput) ||
+            typeof (rawInput as { query: unknown }).query !== 'string'
+          ) {
+            toolResults.push({
+              type: 'tool_result',
+              tool_use_id: toolUse.id,
+              content: 'Invalid tool input.',
+            })
+            continue
+          }
+          const query = (rawInput as { query: string }).query
+          yield { type: 'search', query }
 
-          const results = await tavilySearch(input.query)
+          const results = await tavilySearch(query)
           yield { type: 'found', count: results.length }
 
           const resultText = results
@@ -104,6 +118,10 @@ export async function* runCompetitiveAnalysis(
         }
       }
 
+      if (toolResults.length === 0) {
+        yield { type: 'error', message: 'Agent called unknown tool' }
+        return
+      }
       messages.push({ role: 'user', content: toolResults })
       continue
     }
