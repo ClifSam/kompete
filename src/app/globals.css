@@ -140,6 +140,20 @@
   }
 }
 
+/* Report section staggered reveal */
+@keyframes report-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+.report-section {
+  animation: report-reveal 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.report-section:nth-child(1) { animation-delay:   0ms; }
+.report-section:nth-child(2) { animation-delay:  60ms; }
+.report-section:nth-child(3) { animation-delay: 120ms; }
+.report-section:nth-child(4) { animation-delay: 180ms; }
+
 /* Kompete animations */
 @keyframes log-reveal {
   from { opacity: 0; }
@@ -195,6 +209,7 @@
 @media (prefers-reduced-motion: reduce) {
   .log-line,
   .competitor-card,
+  .report-section,
   .hero-enter,
   .hero-preview-enter {
     animation: none;

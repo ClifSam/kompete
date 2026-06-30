@@ -106,10 +106,10 @@ function CompetitorCard({
 
   return (
     <article
-      className="competitor-card rounded-[8px] border border-border bg-card p-4 shadow-[0_1px_2px_oklch(0_0_0/0.05)]"
+      className="competitor-card flex flex-col rounded-[8px] border border-border bg-card p-4 shadow-[0_1px_2px_oklch(0_0_0/0.05)]"
       style={{ '--card-delay': `${index * 50}ms` } as React.CSSProperties}
     >
-      <div className="mb-2">
+      <div className="mb-3">
         <h3 className="text-base font-semibold leading-snug text-card-foreground">
           {competitor.name}
         </h3>
@@ -124,24 +124,61 @@ function CompetitorCard({
           </a>
         )}
       </div>
-      <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         {competitor.description}
       </p>
       {competitor.strengths.length > 0 && (
-        <ul className="space-y-1.5" aria-label="Key strengths">
+        <ul
+          className="mt-3 divide-y divide-border border-t border-border"
+          aria-label="Key strengths"
+        >
           {competitor.strengths.map((s, i) => (
-            <li key={i} className="flex gap-2 text-xs text-card-foreground">
+            <li key={i} className="flex gap-2.5 py-2 text-sm text-card-foreground">
               <span
                 aria-hidden
-                className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full"
-                style={{ background: 'var(--kompete-border-strong)' }}
-              />
-              {s}
+                className="shrink-0 mt-1 text-[var(--kompete-border-strong)] leading-none"
+              >
+                ›
+              </span>
+              <span className="leading-relaxed">{s}</span>
             </li>
           ))}
         </ul>
       )}
     </article>
+  )
+}
+
+function SmartListItem({
+  text,
+  index,
+  numColorClass,
+}: {
+  text: string
+  index: number
+  numColorClass: string
+}) {
+  const colonIdx = text.indexOf(': ')
+  const title = colonIdx > 0 ? text.slice(0, colonIdx) : null
+  const body = colonIdx > 0 ? text.slice(colonIdx + 2) : text
+
+  return (
+    <li className="flex gap-4 py-4 first:pt-0 last:pb-0">
+      <span
+        className={`shrink-0 w-5 text-xs font-semibold tabular-nums mt-0.5 select-none ${numColorClass}`}
+        aria-hidden
+      >
+        {String(index + 1).padStart(2, '0')}
+      </span>
+      <div className="min-w-0">
+        {title && (
+          <p className="text-sm font-semibold leading-snug text-foreground mb-1">
+            {title}
+          </p>
+        )}
+        <p className="text-sm leading-relaxed text-muted-foreground">{body}</p>
+      </div>
+    </li>
   )
 }
 
@@ -335,29 +372,31 @@ export default function AnalyzePage() {
 
         {/* Report */}
         {showReport && report && (
-          <div className="mt-10 space-y-10">
+          <div className="mt-10 space-y-5">
 
             {/* Summary */}
-            <section aria-labelledby="summary-heading">
-              <h2
-                id="summary-heading"
-                className="mb-2 text-lg font-semibold text-foreground"
-              >
-                Summary
-              </h2>
-              <p
-                className="max-w-[72ch] text-base leading-relaxed text-foreground"
-                style={{ textWrap: 'pretty' } as React.CSSProperties}
-              >
-                {report.summary}
-              </p>
+            <section aria-labelledby="summary-heading" className="report-section">
+              <div className="rounded-[12px] border border-border bg-card px-6 py-5 shadow-[0_1px_2px_oklch(0_0_0/0.05)]">
+                <h2
+                  id="summary-heading"
+                  className="mb-3 text-base font-semibold text-foreground"
+                >
+                  Summary
+                </h2>
+                <p
+                  className="text-base leading-loose text-foreground"
+                  style={{ textWrap: 'pretty', maxWidth: '72ch' } as React.CSSProperties}
+                >
+                  {report.summary}
+                </p>
+              </div>
             </section>
 
             {/* Competitors */}
-            <section aria-labelledby="competitors-heading">
+            <section aria-labelledby="competitors-heading" className="report-section">
               <h2
                 id="competitors-heading"
-                className="mb-4 text-lg font-semibold text-foreground"
+                className="mb-3 text-base font-semibold text-foreground"
               >
                 Competitors{' '}
                 <span className="text-sm font-normal text-muted-foreground">
@@ -371,49 +410,49 @@ export default function AnalyzePage() {
               </div>
             </section>
 
-            {/* Gaps + Recommendations */}
-            <div className="grid gap-8 sm:grid-cols-2">
-              <section aria-labelledby="gaps-heading">
+            {/* Market Gaps */}
+            <section aria-labelledby="gaps-heading" className="report-section">
+              <div className="rounded-[12px] border border-border bg-card px-6 py-5 shadow-[0_1px_2px_oklch(0_0_0/0.05)]">
                 <h2
                   id="gaps-heading"
-                  className="mb-3 text-base font-semibold text-foreground"
+                  className="mb-1 text-base font-semibold text-foreground"
                 >
                   Market Gaps
                 </h2>
-                <ul className="space-y-2.5" role="list">
+                <ul className="divide-y divide-border" role="list">
                   {report.gaps.map((gap, i) => (
-                    <li key={i} className="flex gap-2.5 text-sm text-foreground">
-                      <span
-                        aria-hidden
-                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
-                      />
-                      {gap}
-                    </li>
+                    <SmartListItem
+                      key={i}
+                      text={gap}
+                      index={i}
+                      numColorClass="text-primary"
+                    />
                   ))}
                 </ul>
-              </section>
+              </div>
+            </section>
 
-              <section aria-labelledby="recs-heading">
+            {/* Recommendations */}
+            <section aria-labelledby="recs-heading" className="report-section">
+              <div className="rounded-[12px] border border-border bg-card px-6 py-5 shadow-[0_1px_2px_oklch(0_0_0/0.05)]">
                 <h2
                   id="recs-heading"
-                  className="mb-3 text-base font-semibold text-foreground"
+                  className="mb-1 text-base font-semibold text-foreground"
                 >
                   Recommendations
                 </h2>
-                <ul className="space-y-2.5" role="list">
+                <ul className="divide-y divide-border" role="list">
                   {report.recommendations.map((rec, i) => (
-                    <li key={i} className="flex gap-2.5 text-sm text-foreground">
-                      <span
-                        aria-hidden
-                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                        style={{ background: 'var(--kompete-live)' }}
-                      />
-                      {rec}
-                    </li>
+                    <SmartListItem
+                      key={i}
+                      text={rec}
+                      index={i}
+                      numColorClass="text-[var(--kompete-live)]"
+                    />
                   ))}
                 </ul>
-              </section>
-            </div>
+              </div>
+            </section>
 
           </div>
         )}
