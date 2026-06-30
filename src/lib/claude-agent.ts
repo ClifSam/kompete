@@ -140,7 +140,9 @@ export async function* runCompetitiveAnalysis(
       yield { type: 'status', message: 'Generating report...' }
 
       try {
-        const report: Report = JSON.parse(textBlock.text)
+        const jsonMatch = textBlock.text.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) throw new Error('No JSON found')
+        const report: Report = JSON.parse(jsonMatch[0])
         yield { type: 'report', data: report }
       } catch {
         yield {
