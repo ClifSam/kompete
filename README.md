@@ -2,7 +2,7 @@
 
 AI-powered competitive intelligence. Enter a company name — an autonomous AI agent searches the web in real time and returns a structured brief with competitors, market gaps, and strategic recommendations.
 
-**Live demo:** [kompete.vercel.app](https://kompete.vercel.app)
+**Live demo:** [kompete-two.vercel.app](https://kompete-two.vercel.app)
 
 ---
 

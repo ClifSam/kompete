@@ -351,7 +351,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span>Built with Claude + Tavily</span>
             <a
-              href="#"
+              href="https://github.com/ClifSam/kompete"
               target="_blank"
               rel="noopener noreferrer"
               className="transition-colors hover:text-foreground"
